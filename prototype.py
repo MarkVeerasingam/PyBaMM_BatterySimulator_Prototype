@@ -19,10 +19,14 @@ def simulate_battery():
         # Source Code: https://tinyurl.com/39kc5jm6
         # Solution 1): custom_parameters = model.default_parameter_values, however poor solving
         # Solution 2): exception handelling
+
+        # Params should be time(hr), Voltage(min/max), current, Cell Capacity for now. 
+        # String Experiments could be cool jupyer notebook example: https://tinyurl.com/kue58phd
         custom_parameters.update({
-            # Keep it relative to 2.5 -> 4.2 V simulations, SolverError is triggered if not
             "Lower voltage cut-off [V]": 2.5, 
             "Upper voltage cut-off [V]": 4.2, 
+
+            
         }) 
 
         # Create and solve the PyBaMM simulation
