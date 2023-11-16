@@ -1,2 +1,2 @@
 # PyBaMM_BatterySimulator_Prototype
-Protyping for CICD Project
+Protyping a flask based Battery simulator for Java CICD Project.
