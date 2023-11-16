@@ -26,13 +26,12 @@ def simulate_battery():
             "Current function [A]":         10
         }) 
 
-        # Create and solve the PyBaMM simulation
+        # Create and solve the simulation
         sim = pybamm.Simulation(model, parameter_values=custom_parameters)
             
         sim.solve([0, 3700]) #this is one hour, todo: user input specified time for solve
         # Look at simulating drive cycles t_eval, initial_soc, c rate, could be a cool feature for EV
 
-        # Extract a simple result (e.g., voltage) for demonstration purposes
         # Source Code: https://tinyurl.com/2s3c7zke
         voltage = sim.solution['Terminal voltage [V]'].entries.tolist()
 
@@ -46,5 +45,5 @@ def simulate_battery():
     except Exception as e:
         print("Error:", str(e))
 
-# Run the simulation function
+# Run the simulation
 simulate_battery()
