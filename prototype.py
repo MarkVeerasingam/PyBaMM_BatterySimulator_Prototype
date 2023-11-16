@@ -1,4 +1,5 @@
 import pybamm
+import time
 
 def simulate_battery():
     try:
@@ -21,7 +22,7 @@ def simulate_battery():
         custom_parameters.update({ # all values below are default
             "Lower voltage cut-off [V]":    2.5, 
             "Upper voltage cut-off [V]":    4.2, 
-            "Nominal cell capacity [A.h]":  5,
+            "Nominal cell capacity [A.h]":  5, # in Ah, typically batteries record in mAh
             "Current function [A]":         10
         }) 
 
@@ -38,7 +39,7 @@ def simulate_battery():
         # Print or return the simulation results
         print("Simulation Results:")
         print("Voltage:", voltage)
-
+        
     except pybamm.SolverError as e:
         print(f"Solver error: {str(e)}")
         print("Voltage cut-off values should be relative to 2.5V and 4.2V")
