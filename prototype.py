@@ -1,10 +1,21 @@
 import pybamm
-import time
+import numpy as np
 
 def simulate_battery():
+
+    hours = int(input("Please enter hours:"))
+    seconds = hours * 60 * 60
+    print(seconds, " Seconds")
+
     try:
         # Create a PyBaMM model, i'll use DFN for simplicity
         model = pybamm.lithium_ion.DFN()
+
+        # Create Solvers
+        # load solvers
+        safe_solver = pybamm.CasadiSolver(atol=1e-6, rtol=1e-6, mode="safe")
+        fast_solver = pybamm.CasadiSolver(atol=1e-3, rtol=1e-3, mode="fast")
+
 
         # Parameter sets are premade parameters based off recognised experiemtns
         # https://docs.pybamm.org/en/stable/source/api/parameters/parameter_sets.html
@@ -20,25 +31,32 @@ def simulate_battery():
         # Params should be, Voltage(min/max), current, Cell Capacity for now. 
         # String Experiments could be cool jupyer notebook example: https://tinyurl.com/kue58phd
         custom_parameters.update({ # all values below are default
-            "Lower voltage cut-off [V]":    2.5, 
             "Upper voltage cut-off [V]":    4.2, 
-            "Nominal cell capacity [A.h]":  5, # in Ah, typically batteries record in mAh
-            "Current function [A]":         10
+            "Lower voltage cut-off [V]":    2.5, 
+            "Nominal cell capacity [A.h]":  3.18, # in Ah, typically recorded in mAh
+            "Current function [A]":         1.5  # Make this non changeable for now
         }) 
-
+        
         # Create and solve the PyBaMM simulation
-        sim = pybamm.Simulation(model, parameter_values=custom_parameters)
-            
-        sim.solve([0, 3700]) #this is one hour, todo: user input specified time for solve
+        # sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=casadi_solver)
+        
+        # create simulations
+        safe_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=safe_solver)
+        fast_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=fast_solver)
+
+        solution = safe_sim.solve([0, seconds]) #this is one hour, todo: user input specified time for solve
         # Look at simulating drive cycles t_eval, initial_soc, c rate, could be a cool feature for EV
 
         # Extract a simple result (e.g., voltage) for demonstration purposes
         # Source Code: https://tinyurl.com/2s3c7zke
-        voltage = sim.solution['Terminal voltage [V]'].entries.tolist()
+        time_s = solution['Time [s]'].entries
+        voltage = solution['Battery voltage [V]'].entries
+        current = solution['Current [A]'].entries
+        dcap = solution['Discharge capacity [A.h]'].entries
 
-        # Print or return the simulation results
-        print("Simulation Results:")
-        print("Voltage:", voltage)
+        print("Time [s]\tVoltage\t\tCurrent\t\tDischarge Capacity")
+        for t, v, i, dc in zip(time_s.data, voltage.data, current.data, dcap.data):
+            print(f"{t:.2f}\t\t{v:.4f}\t\t{i:.4f}\t\t{dc:.4f}", flush=True)
         
     except pybamm.SolverError as e:
         print(f"Solver error: {str(e)}")
