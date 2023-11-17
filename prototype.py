@@ -37,10 +37,11 @@ def simulate_battery():
         }) 
 
         # Create and solve the PyBaMM simulation
+        # sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=casadi_solver)
         safe_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=safe_solver)
         fast_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=fast_solver)
 
-        solution = safe_sim.solve([0, seconds]) 
+        solution = safe_sim.solve([0, seconds]) #this is one hour, todo: user input specified time for solve
         # Look at simulating drive cycles t_eval, initial_soc, c rate, could be a cool feature for EV
 
         # Source Code: https://tinyurl.com/2s3c7zke
