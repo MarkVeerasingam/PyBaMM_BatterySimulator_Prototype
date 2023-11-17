@@ -36,18 +36,15 @@ def simulate_battery():
             "Nominal cell capacity [A.h]":  3.18, # in Ah, typically recorded in mAh
             "Current function [A]":         1.5  # Make this non changeable for now
         }) 
-        
+
         # Create and solve the PyBaMM simulation
         # sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=casadi_solver)
-        
-        # create simulations
         safe_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=safe_solver)
         fast_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=fast_solver)
 
-        solution = safe_sim.solve([0, seconds]) #this is one hour, todo: user input specified time for solve
+        fast_sim.solve([0, seconds]) #this is one hour, todo: user input specified time for solve
         # Look at simulating drive cycles t_eval, initial_soc, c rate, could be a cool feature for EV
 
-        # Extract a simple result (e.g., voltage) for demonstration purposes
         # Source Code: https://tinyurl.com/2s3c7zke
         time_s = solution['Time [s]'].entries
         voltage = solution['Battery voltage [V]'].entries
@@ -64,5 +61,5 @@ def simulate_battery():
     except Exception as e:
         print("Error:", str(e))
 
-# Run the simulation function
+# Run the simulation
 simulate_battery()
