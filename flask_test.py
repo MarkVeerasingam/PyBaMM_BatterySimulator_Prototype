@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-def simulate_battery(params ,hours):
+def simulate_battery(params, hours):
     try:
         # Your existing code for battery simulation here...
         model = pybamm.lithium_ion.DFN()
@@ -14,7 +14,7 @@ def simulate_battery(params ,hours):
 
         safe_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=safe_solver)
         
-        seconds = params.get('hours', 1) * 60 * 60
+        seconds = hours * 60 * 60
         solution = safe_sim.solve([0, seconds])
 
         time_s = solution['Time [s]'].entries
