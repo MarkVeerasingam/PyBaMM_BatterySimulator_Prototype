@@ -8,7 +8,7 @@
               
   https://pybamm.org/
 
-  The Battery Simulator protoype is to work as a microservice and or UART based application for generating batteries and their respective parameters for BMS Development
+  The Battery Simulator protoype is to work as a flask based microservice for generating batteries and their respective parameters for a database and larger scale application implementation
 ## Notes:  
 - All simulations are performed at ~25°.
 - ALl simulations are solved on a "safe mode" with CasadiSolver https://tinyurl.com/mrxm9b96
