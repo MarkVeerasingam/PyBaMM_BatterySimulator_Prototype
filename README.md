@@ -1,7 +1,7 @@
 # PyBaMM_BatterySimulator_Prototype
 ## About
 - PyBaMM (Python Battery Mathematical Model) is developed by Ionworks, The Faraday Institution and NumFocus.
-  Partnering with universitys like Oxford and University of Michigan, both recognised leaders in Battery Technology R&D.
+  Partnering with universities like Oxford and University of Michigan, both recognised leaders in Battery Technology R&D.
               
   PyBaMM is an mathematical simulation framework that offers a platform for formulating and solving differential equations related to electrochemical behaviours of batteries. 
   It includes a library of battery models, parameters, and tools for simulating battery experiments and visualizing results.
