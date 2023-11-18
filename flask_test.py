@@ -38,6 +38,7 @@ def simulate_battery(params, hours):
 
         return combined_data
 
+
     except pybamm.SolverError as e:
         return {"error": f"SolverError:\nVoltage cut-off values should be relative to 2.5V and 4.2V: {str(e)}"}
     except Exception as e:
