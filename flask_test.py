@@ -1,12 +1,3 @@
-"""
-    Notes:  - All simulations are performed at ~25°.
-            - ALl simulations are performed on a "safe" CasadiSolver https://tinyurl.com/mrxm9b96
-
-    Todo:   - Add validation and mandatory inputs (vmin/vmax, capacity and time) current can be changed but cautioun it to break ODE Solving tolerence
-            - Develop a flask runner client
-            - Make lithium_ion models be custom param i.e. DFN, SPM, SPMe could be Model 1, Model 2... 
-            - Work with temperatures 25°
-"""
 import pybamm
 from flask import Flask, request, jsonify
 
@@ -27,7 +18,7 @@ def simulate_battery(params, hours):
         safe_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=safe_solver) 
         
         seconds = hours * 60 * 60 # Pybamm solves in secnods, having the user input hour would make more sense
-        solution = safe_sim.solve([0, seconds]) # solve the simulation from 0 seconds -> x ammount of seconds
+        solution = safe_sim.solve([0, seconds]) # solve  simulation from 0 seconds -> x ammount of seconds
 
         time_s = solution['Time [s]'].entries
         voltage = solution['Battery voltage [V]'].entries
