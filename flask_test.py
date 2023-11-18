@@ -1,3 +1,12 @@
+"""
+    Notes:  - All simulations are performed at ~25°.
+            - ALl simulations are performed on a "safe" CasadiSolver https://tinyurl.com/mrxm9b96
+
+    Todo:   - Add validation and mandatory inputs (vmin/vmax, capacity and time) current can be changed but cautioun it to break ODE Solving tolerence
+            - Develop a flask runner client
+            - Make lithium_ion models be custom param i.e. DFN, SPM, SPMe could be Model 1, Model 2... 
+            - Work with temperatures 25°
+"""
 import pybamm
 from flask import Flask, request, jsonify
 
@@ -5,17 +14,20 @@ app = Flask(__name__)
 
 def simulate_battery(params, hours):
     try:
-        # Your existing code for battery simulation here...
+        # Create a Lithium Ion battery model with DFN, may look at having different models in the near future 
         model = pybamm.lithium_ion.DFN()
-        safe_solver = pybamm.CasadiSolver(atol=1e-6, rtol=1e-6, mode="safe")
 
+        # Casadi safe solver may be best for the nature of wanting to generate data correctly rather than fast
+        safe_solver = pybamm.CasadiSolver(atol=1e-6, rtol=1e-6, mode="safe") # perform step-and-check integration in global steps of size dt_max 
+
+        # Using a premade parameter set based off a LGM50 lithium Ion Cell, "Chen2020" is the name of the parameter set
         custom_parameters = pybamm.ParameterValues("Chen2020")
         custom_parameters.update(params)
 
-        safe_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=safe_solver)
+        safe_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=safe_solver) 
         
-        seconds = hours * 60 * 60
-        solution = safe_sim.solve([0, seconds])
+        seconds = hours * 60 * 60 # Pybamm solves in secnods, having the user input hour would make more sense
+        solution = safe_sim.solve([0, seconds]) # solve the simulation from 0 seconds -> x ammount of seconds
 
         time_s = solution['Time [s]'].entries
         voltage = solution['Battery voltage [V]'].entries
@@ -39,21 +51,21 @@ def simulate_battery(params, hours):
 @app.route('/simulate', methods=['POST'])
 def simulate():
     try:
-        data = request.get_json()
+        data = request.get_json() # Get data from post request
 
-        # Update parameters based on data received from Java
+        # Update parameters based on data received (for this case, Java)
         hours = data.get('Time [hr]', 1)
         custom_parameters = {
             "Upper voltage cut-off [V]": data.get("Upper Voltage Cut-Off", 4.2),
             "Lower voltage cut-off [V]": data.get("Lower Voltage Cut-Off", 2.5),
             "Nominal cell capacity [A.h]": data.get("Nominal Cell Capacity [aH]", 8.6),
-            "Current function [A]": 2 # dont change
+            "Current function [A]": 2 # dont change, until I can find a way to calc a better C rate 
         }
 
         # Call the battery simulation function
         simulation = simulate_battery(custom_parameters, hours)
 
-        return jsonify(simulation)
+        return jsonify(simulation) # return as a json
 
     except Exception as e:
         return jsonify(error=str(e))
