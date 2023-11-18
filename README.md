@@ -18,5 +18,5 @@
 - Add validation and mandatory inputs (vmin/vmax, capacity and time) current can be changed but cautioun it to break ODE Solving tolerence
 - Develop a flask runner client (maybe swagger codegen)
 - Make lithium_ion models be custom param i.e. DFN, SPM, SPMe could be Model 1, Model 2... 
-- Work with temperatures 25°
+- Work with higher degree temperatures when simulating
 - Make a parameter function | it should just handle parameter.update() and pass out an arg to simulate_battery()
