@@ -24,15 +24,19 @@ def simulate_battery(params, hours):
         voltage = solution['Battery voltage [V]'].entries
         current = solution['Current [A]'].entries
         dcap = solution['Discharge capacity [A.h]'].entries
+        combined_data = []
 
-        result = {
-            "Time [s]": time_s.tolist(),
-            "Voltage": voltage.tolist(),
-            "Current": current.tolist(),
-            "Discharge Capacity": dcap.tolist()
-        }
+        for i in range(len(time_s)):
+            data_point = {
+                "time": time_s[i],
+                "voltage": voltage[i],
+                "current": current[i],
+                "dcap": dcap[i]
+            }
+            combined_data.append(data_point)
 
-        return result
+
+        return combined_data
 
     except pybamm.SolverError as e:
         return {"error": f"SolverError:\nVoltage cut-off values should be relative to 2.5V and 4.2V: {str(e)}"}
@@ -45,11 +49,11 @@ def simulate():
         data = request.get_json() # Get data from post request
 
         # Update parameters based on data received (for this case, Java)
-        hours = data.get('Time [hr]', 1)
+        hours = data.get('time', 1)
         custom_parameters = {
-            "Upper voltage cut-off [V]": data.get("Upper Voltage Cut-Off", 4.2),
-            "Lower voltage cut-off [V]": data.get("Lower Voltage Cut-Off", 2.5),
-            "Nominal cell capacity [A.h]": data.get("Nominal Cell Capacity [aH]", 8.6),
+            "Upper voltage cut-off [V]": data.get("upperVoltage", 4.2),
+            "Lower voltage cut-off [V]": data.get("lowerVoltage", 2.5),
+            "Nominal cell capacity [A.h]": data.get("nominalCell", 8.6),
             "Current function [A]": 2 # dont change, until I can find a way to calc a better C rate 
         }
 
