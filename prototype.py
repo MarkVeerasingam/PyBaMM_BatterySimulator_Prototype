@@ -30,9 +30,9 @@ def simulate_battery():
         # Params should be, Voltage(min/max), current, Cell Capacity for now. 
         # String Experiments could be cool jupyer notebook example: https://tinyurl.com/kue58phd
         custom_parameters.update({ # all values below are default
-            "Upper voltage cut-off [V]":    4.2, 
-            "Lower voltage cut-off [V]":    2.5, 
-            "Nominal cell capacity [A.h]":  8.6, # in Ah, typically recorded in mAh
+            "Upper voltage cut-off [V]":    4, 
+            "Lower voltage cut-off [V]":    2.9, 
+            "Nominal cell capacity [A.h]":  6.6, # in Ah, typically recorded in mAh
             "Current function [A]":         2  # Make this non changeable for now
         }) 
 

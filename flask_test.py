@@ -5,11 +5,12 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 #url to send the data back to the Java Job Manager
-return_url = "http://127.0.0.1:5000/simulation_finished"
+return_url = "http://127.0.0.1:8083/updateBatteryResults"
 
 
 def simulate_battery(params, hours, id):
     try:
+
         # Create a Lithium Ion battery model with DFN, may look at having different models in the near future 
         model = pybamm.lithium_ion.DFN()
 
@@ -40,12 +41,15 @@ def simulate_battery(params, hours, id):
                 "dcap": dcap[i]
             }
             combined_data.append(data_point)
+
         # send request back out after we finish the simulation
         requests.post(return_url, json={
             'id': id,
             'result': combined_data
         })
 
+        return combined_data
+    
     except pybamm.SolverError as e:
         return {"error": f"SolverError:\nVoltage cut-off values should be relative to 2.5V and 4.2V: {str(e)}"}
     except Exception as e:
@@ -55,22 +59,30 @@ def simulate_battery(params, hours, id):
 @app.route('/simulate', methods=['POST'])
 def simulate():
     try:
+        
         data = request.get_json()  # Get data from post request
 
         # Update parameters based on data received (for this case, Java)
+        
         hours = data.get('time', 1)
         id = data.get('id')
         custom_parameters = {
             "Upper voltage cut-off [V]": data.get("upperVoltage", 4.2),
             "Lower voltage cut-off [V]": data.get("lowerVoltage", 2.5),
             "Nominal cell capacity [A.h]": data.get("nominalCell", 8.6),
-            "Current function [A]": 2  # dont change, until I can find a way to calc a better C rate
+            "Current function [A]": data.get("controlCurrent", 5),  # keep relativley low "Current-controlled"
+            # where voltage is influenced by applied current and internal resistance
+            # find a way to calc a better C rate
         }
 
+        # by using threads we handle the simulations separately from the main  application thread. 
+        # goal is to handle multiple simulation requests concurrently without blocking. 
         thread = threading.Thread(target=simulate_battery, args=(custom_parameters, hours, id))
         thread.start()
 
-        return jsonify({"jobStarted": True})
+        sim = simulate_battery(custom_parameters, hours, id)
+
+        return jsonify({"jobStarted": True}, sim)
 
     except Exception as e:
         return jsonify(error=str(e))
