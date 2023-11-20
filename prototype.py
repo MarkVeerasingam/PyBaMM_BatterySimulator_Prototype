@@ -21,6 +21,10 @@ def simulate_battery():
         custom_parameters = pybamm.ParameterValues("Chen2020")
         # custom_parameters = model.default_parameter_values 
 
+        def my_current(t):
+            return pybamm.sin(2 * np.pi * t / 60)
+        custom_parameters["Current function [A]"] = my_current
+
         # There is a high tolerence to battery simulations, this may lead to
         # "Error: Events ['Maximum voltage [V]'] are non-positive at initial conditions".
         # Source Code: https://tinyurl.com/39kc5jm6
@@ -30,19 +34,23 @@ def simulate_battery():
         # Params should be, Voltage(min/max), current, Cell Capacity for now. 
         # String Experiments could be cool jupyer notebook example: https://tinyurl.com/kue58phd
         custom_parameters.update({ # all values below are default
-            "Upper voltage cut-off [V]":    4, 
-            "Lower voltage cut-off [V]":    2.9, 
-            "Nominal cell capacity [A.h]":  6.6, # in Ah, typically recorded in mAh
-            "Current function [A]":         2  # Make this non changeable for now
+            "Upper voltage cut-off [V]":    4.2, 
+            "Lower voltage cut-off [V]":    2.5, 
+            "Nominal cell capacity [A.h]":  8.5, # in Ah, typically recorded in mAh
+            "Current function [A]":         2  # Make this non changeable for now 
         }) 
+        # https://tinyurl.com/4zynbp7c Look at making a custom current func for current function [A]
 
         # Create and solve the PyBaMM simulation
         # sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=casadi_solver)
         safe_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=safe_solver)
         fast_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=fast_solver)
 
-        solution = safe_sim.solve([0, seconds]) #this is one hour, todo: user input specified time for solve
+        t_eval = np.arange(0, 121, 1)
+
+        solution = safe_sim.solve([0,seconds]) 
         # Look at simulating drive cycles t_eval, initial_soc, c rate, could be a cool feature for EV
+        # solution = safe_sim.solve(t_eval=t_eval) prints no time value but has a cool changing current feature. this could be cool to look at later on for non "time based simulations"
 
         # Source Code: https://tinyurl.com/2s3c7zke
         time_s = solution['Time [s]'].entries
