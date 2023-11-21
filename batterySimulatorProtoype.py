@@ -53,7 +53,7 @@ ToDo:
                     
                 -   String based experiments
 
-                -   Try implementoing LiionPack for lithium ion pack simulation
+                -   Try implementing LiionPack for lithium ion pack simulation
 '''
 
 import threading
