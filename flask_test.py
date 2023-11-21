@@ -5,9 +5,7 @@ Description:    A flask based microservice that simulates Lithium-Ion Battery mo
                 before sending out a post request to Job Manager when the simulation is complete. 
 
                 The application should handle multiple simulation requests concurrently without blocking.
-                Java Job Manager looks at the message queues sent from microservice 1. 
-                If a message says that a simulation job is already running, it waits before pulling from message queue. 
-                If a job is not running it tells this microservice to execute the next job (generate a new simulation)
+                
 
 Features:       -   Currently, genereates a single cell Lithium Ion Battery Model, based off a LGM50 Cell's electrochemical properties.
                     Model generated from param inputs: 'upper-voltage cut off', 'lower-voltage cut off', 'nominal cell capacity' and a fixed 'current'.
@@ -23,15 +21,38 @@ ToDo:
                 Simulations:
                     ------------------------[Simulation Model Options]------------------------------------------------------
                 -   Option to simulate battereis at 0°/25°/75°. Default is 25°
+
                 -   Option to simulate a discharge or charge of a battery. (Could just reverse the discharge? simple option)
+
                 -   Option to simulate in different models ("BaseModel", "SPM", "DFN"etc...)
                     Could display "Simulate Model 1/2 etc..." on website (no need for major detail).
+
+                -   [idea] With validation. Have the option to input either a nominal voltage or upper and lower voltage
+                    as a customisable parameter. Lithium Ion's nominal voltage is ~ 3.6V to 3.7V. 
+                    Nomimnal Voltage = Upper Voltage CutOff + Lower Voltage CutOff / 2.
+                    Most Li-On Battery datasheets show it's nominal voltage. Having the above suggestion is good UX
+                    Alternativley.
+                        A simpler option is to Let the user choose a nominal voltage option between 3.6V and 3.7V they wish
+                        to model off of. These options just  have the preset upper and lower voltages assigned to them.
+                        This saves us trying to calc new upper and lower voltages.
+
+                    --------------------------[Simulation Features]--------------------------------------------------------
+                -   Handle multiple simulation requests concurrently without blocking. 
+                    Java Job Manager looks at the message queues sent from microservice 1. 
+                    If a message says that a simulation job is already running, it waits before pulling from message queue. 
+                    If a job is not running it tells this microservice to execute the next job (generate a new simulation)
+
+                -   This is a job manager function but relevant. The project DB should have premade real life battery cells like LGM50 or Samsung-inr18650-25r 
+                    The simulator should be able to succesfully recieve these values and send it back without causing any issues.
+
                 -   
+                    
                     --------------------------------[Long-Term]------------------------------------------------------------
                 -   Once a model is made, look at making a definition that simulates that models drive cycle
                     User could have option to simulate battery model and or make drive cycle
                     By solving with a changing current like: https://tinyurl.com/2prwzrrh
                     It would allow a drive cycle simulation (different from the current time solved simulation).
+                    
                 -   If possible look at string based experiments
 '''
 
@@ -119,12 +140,12 @@ def simulate():
             changing "controlCurrent" can cause the simulation to fail if passing too high of a current.
             "controlCurrent" is designed to be a fixed current when solving the ODE.
             e.g.
-            custom_parameters.update({ 
-            "Upper voltage cut-off [V]":    4.2, 
-            "Lower voltage cut-off [V]":    2.5, 
-            "Nominal cell capacity [A.h]":  9, 
-            "Current function [A]":         8  
-            }) 
+                custom_parameters.update({ 
+                "Upper voltage cut-off [V]":    4.2, 
+                "Lower voltage cut-off [V]":    2.5, 
+                "Nominal cell capacity [A.h]":  9, 
+                "Current function [A]":         8  
+                }) 
 
             Produces errors like:
             At t = 549.166 and h = 3.20498e-14, the corrector convergence failed repeatedly or with |h| = hmin.
