@@ -44,8 +44,6 @@ ToDo:
 
                 -   This is a job manager function but relevant. The project DB should have premade real life battery cells like LGM50 or Samsung-inr18650-25r 
                     The simulator should be able to succesfully recieve these values and send it back without causing any issues.
-
-                -   
                     
                     --------------------------------[Long-Term]------------------------------------------------------------
                 -   Once a model is made, look at making a definition that simulates that models drive cycle
@@ -53,7 +51,9 @@ ToDo:
                     By solving with a changing current like: https://tinyurl.com/2prwzrrh
                     It would allow a drive cycle simulation (different from the current time solved simulation).
                     
-                -   If possible look at string based experiments
+                -   String based experiments
+
+                -   Try implementoing LiionPack for lithium ion pack simulation
 '''
 
 import threading
