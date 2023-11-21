@@ -155,6 +155,8 @@ def simulate():
             I found setting controlCurrent to 2 is a nice sweet spot.
             While i'm not entirley sure why, I suspect that.. 
             Similar to a 1C charge for a 2000mAh the battery would be 2000mA (or 2A)
+
+            I think having the user choose would be benefiial for unique resuelts. Would need to give a prompt on the frontend
         '''
 
         custom_parameters = {
