@@ -10,6 +10,16 @@ def simulate_battery():
     try:
         # Create a PyBaMM model, i'll use DFN for simplicity
         model = pybamm.lithium_ion.DFN()
+        custom_parameters = pybamm.ParameterValues("Chen2020")
+
+        # set mesh with dict (all default)
+        var_pts = {
+        "x_n": 30,  # negative electrode
+        "x_s": 30,  # separator
+        "x_p": 30,  # positive electrode
+        "r_n": 10,  # negative particle
+        "r_p": 10,  # positive particle
+        }
 
         # Create Solvers
         # load solvers
@@ -18,12 +28,7 @@ def simulate_battery():
 
         # Parameter sets are premade parameters based off recognised experiemtns
         # https://docs.pybamm.org/en/stable/source/api/parameters/parameter_sets.html
-        custom_parameters = pybamm.ParameterValues("Chen2020")
         # custom_parameters = model.default_parameter_values 
-
-        def my_current(t):
-            return pybamm.sin(2 * np.pi * t / 60)
-        custom_parameters["Current function [A]"] = my_current
 
         # There is a high tolerence to battery simulations, this may lead to
         # "Error: Events ['Maximum voltage [V]'] are non-positive at initial conditions".
@@ -37,14 +42,14 @@ def simulate_battery():
             "Upper voltage cut-off [V]":    4.2, 
             "Lower voltage cut-off [V]":    2.5, 
             "Nominal cell capacity [A.h]":  8.5, # in Ah, typically recorded in mAh
-            "Current function [A]":         2  # Make this non changeable for now 
+            "Current function [A]":         4  # Make this non changeable for now 
         }) 
         # https://tinyurl.com/4zynbp7c Look at making a custom current func for current function [A]
 
         # Create and solve the PyBaMM simulation
         # sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=casadi_solver)
-        safe_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=safe_solver)
-        fast_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=fast_solver)
+        safe_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=safe_solver, var_pts=var_pts)
+        fast_sim = pybamm.Simulation(model, parameter_values=custom_parameters, solver=fast_solver, var_pts=var_pts)
 
         t_eval = np.arange(0, 121, 1)
 

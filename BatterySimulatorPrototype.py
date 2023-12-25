@@ -11,7 +11,7 @@ Features:       -   Currently, genereates a single cell Lithium Ion Battery Mode
                 -   Model generated from param inputs: 'upper-voltage cut off', 'lower-voltage cut off', 'nominal cell capacity' and a fixed 'current'.
                 -   Java Job Manager can send a post request to the microservice and that updates the payload for model generation and simulation.
                 -   Battery Simulator sends payload back to job manager via post request.
-                
+
 ToDo:           
                 Testing and Validation:
                 -   Make tests to check if the payload has recieved/updated/sent to and from java respectivley.
